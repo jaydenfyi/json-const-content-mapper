@@ -1,6 +1,6 @@
 # Knope changesets and npm release recommendation
 
-Research only. These are illustrative files to implement later, not installed configuration. Sources reflect the current official documentation and Knope `0.23.1` source/release consulted during this investigation.
+Research only. Version examples reflect the subsequently chosen initial version, `0.0.1`. These are illustrative files to implement later, not installed configuration. Sources reflect the current official documentation and Knope `0.23.1` source/release consulted during this investigation.
 
 ## Recommendation
 
@@ -12,7 +12,7 @@ The official PR recipe already supplies the needed branch/commit/push/PR steps. 
 
 ## Local facts and validation limits
 
-Read locally: `package.json`, `README.md`, and `nub.lock`. This is `json-const-content-mapper@0.1.0`, ESM, Node `>=22`; `build` runs `tsc -p tsconfig.build.json`, `prepack` runs `nub run build`, and tests build before invoking Node's test runner. Development declares Nub `^0.6.0`; the lock pins TypeScript `7.1.0-dev.20261013.1`. The inspected lock has no root package release-version field.
+Read locally: `package.json`, `README.md`, and `nub.lock`. This is `json-const-content-mapper@0.0.1`, ESM, Node `>=22`; `build` runs `tsc -p tsconfig.build.json`, `prepack` runs `nub run build`, and tests build before invoking Node's test runner. Development declares Nub `^0.6.0`; the lock pins TypeScript `7.1.0-dev.20261013.1`. The inspected lock has no root package release-version field.
 
 Additional checks supplied by the parent investigation, not rerun here:
 
@@ -219,8 +219,8 @@ Before automation is enabled:
    }
    ```
    Use exact real owner/repository casing. npm requires the metadata to match the GitHub repository; provenance additionally requires public source and a public package. Unscoped packages are always public. [9][10][17]
-2. **Likely bootstrap: publish `0.1.0` manually once**, from the reviewed committed source, after Nub frozen install/test/typecheck and a real package-content review. Use an npm account with the appropriate package rights, interactive `npm login`, and account 2FA, then `npm publish --access public`. Do not introduce a CI npm token solely for bootstrap. Package settings/trusted-publisher registration presume an existing package; registry E404 and name policies still require human verification. Current npm docs also offer staged first publishing with a public placeholder, but it adds an approval flow and is not needed for this recommendation. [17][18]
-3. Record/tag the exact bootstrap source as `v0.1.0` and push that tag (and optionally its GitHub release) **after confirming the initial publish succeeded**. This is the baseline; the first automated release should increment it, not republish `0.1.0`. Future `Release` uses `vVERSION` for single-package config. [16]
+2. **Likely bootstrap: publish `0.0.1` manually once**, from the reviewed committed source, after Nub frozen install/test/typecheck and a real package-content review. Use an npm account with the appropriate package rights, interactive `npm login`, and account 2FA, then `npm publish --access public`. Do not introduce a CI npm token solely for bootstrap. Package settings/trusted-publisher registration presume an existing package; registry E404 and name policies still require human verification. Current npm docs also offer staged first publishing with a public placeholder, but it adds an approval flow and is not needed for this recommendation. [17][18]
+3. Record/tag the exact bootstrap source as `v0.0.1` and push that tag (and optionally its GitHub release) **after confirming the initial publish succeeded**. This is the baseline; the first automated release should increment it, not republish `0.0.1`. Future `Release` uses `vVERSION` for single-package config. [16]
 4. On npmjs.com → package settings → Trusted Publisher, choose GitHub Actions. Set actual owner, repo, and workflow filename **`release.yml`**, not its path. If using a GitHub Environment, bind its exact name and add the matching `environment` to the release job; none is assumed here. Explicitly allow **direct `npm publish`**, not stage-only publishing. Current defaults can be stage-only. [9]
 5. Use GitHub-hosted `ubuntu-latest`, **Node >=22.14.0 and npm >=11.5.1**. Merely setting Node 22 or satisfying the package's `>=22` engine is not enough. The example chooses Node 24 and explicitly upgrades to npm 11; verify the logged resolved versions. OIDC requires job permission `id-token: write`; GitHub release creation separately requires `contents: write`. No `NPM_TOKEN`/`NODE_AUTH_TOKEN` is required for public dependency installs or OIDC publishing. Provenance is automatically generated for supported public GitHub releases; `--provenance` is unnecessary. [9]
 6. Current npm docs require a newly created trust configuration's **first successful publish within two days** or it expires. Configure it when the next real version is ready. After a successful OIDC release, npm recommends “Require two-factor authentication and disallow tokens”; that setting does not disable OIDC. [9]

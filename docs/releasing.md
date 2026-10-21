@@ -29,7 +29,7 @@ Use `patch`, `minor`, or `major` for the intended version change. Commit message
 Keep `RELEASES_ENABLED=false` until all these steps are complete.
 
 1. Review tracked files and repository history before changing visibility. Make the repository public deliberately through GitHub settings; **npm packages from this project are public too**.
-2. Verify npm package-name availability and account access. From the reviewed, committed initial `0.1.0` source, run:
+2. Verify npm package-name availability and account access. From the reviewed, committed initial `0.0.1` source, run:
 
    ```sh
    nub install --frozen-lockfile
@@ -43,8 +43,8 @@ Keep `RELEASES_ENABLED=false` until all these steps are complete.
    This is a real public publication. Use interactive npm authentication/2FA, not a CI npm token. Only after confirming success, tag the exact published commit and push that tag:
 
    ```sh
-   git tag v0.1.0
-   git push origin v0.1.0
+   git tag v0.0.1
+   git push origin v0.0.1
    ```
 
    If the manifest version has changed before bootstrap, use that version consistently instead.
