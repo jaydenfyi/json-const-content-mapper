@@ -26,6 +26,7 @@ jobs:
           shim: false
           package-manager-cache: false
       - run: nub install --frozen-lockfile
+      - run: nub run check
       - run: nub run test
       - run: nub run typecheck
       - run: npm pack --dry-run
