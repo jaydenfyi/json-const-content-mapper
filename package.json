@@ -13,6 +13,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
+    "changeset": "changeset",
     "prepack": "nub run build",
     "typecheck": "tsc",
     "test": "nub run build && node --test test/*.test.ts",
@@ -20,6 +21,7 @@
     "fix": "ultracite fix"
   },
   "devDependencies": {
+    "@changesets/cli": "^3.0.3",
     "@types/node": "^26.6.5",
     "oxfmt": "^0.71.0",
     "oxlint": "^1.86.0",

@@ -2,17 +2,17 @@
 
 Include a `.changeset/*.md` file in PRs that need an npm release. Skip it for documentation or internal changes that do not need publishing.
 
-Create one with [Knope 0.23.1](https://github.com/knope-dev/knope/releases/tag/knope/v0.23.1):
+After installing dependencies, run this from the repository root:
 
 ```sh
-knope document-change
+nub run changeset
 ```
 
-Or write the file yourself:
+You can also create a file such as `.changeset/fix-diagnostics.md` with this content. No extra tools required:
 
 ```markdown
 ---
-default: patch
+"json-const-content-mapper": patch
 ---
 
 Correct JSON diagnostic locations.

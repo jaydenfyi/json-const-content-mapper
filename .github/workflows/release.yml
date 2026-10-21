@@ -15,7 +15,7 @@ concurrency:
 jobs:
   release:
     if: >-
-      vars.RELEASES_ENABLED == 'true' && github.event.repository.private == false && github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'release' && github.event.pull_request.head.repo.full_name == github.repository
+      vars.RELEASES_ENABLED == 'true' && github.event.repository.private == false && github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'changeset-release/main' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -42,10 +42,6 @@ jobs:
       - run: nub run test
       - run: nub run typecheck
       - run: npm pack --dry-run
-      - uses: knope-dev/action@19617851f9f13ab2f27a05989c55efb18aca3675 # v2.1.2
+      - uses: changesets/action/publish@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
         with:
-          version: 0.23.1
-      - run: knope release
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-      - run: npm publish --access public
+          script: nub run changeset publish

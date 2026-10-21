@@ -133,7 +133,7 @@ TypeScript reports duplicate keys as errors (TS1117).
 
 ## Development
 
-Development uses [Nub](https://nubjs.com/) with `nub.lock`.
+Development uses Node.js 24 and [Nub](https://nubjs.com/) with `nub.lock`.
 
 ```sh
 nub install --frozen-lockfile
@@ -141,7 +141,7 @@ nub run test       # builds dist/, then runs unit, protocol, and end-to-end test
 nub run typecheck
 ```
 
-For releases, add a [Knope change file](docs/releasing.md). We keep automated publishing disabled until we make the repository public and enable releases.
+For changes that need a release, run `nub run changeset` and commit the generated file with your code. See [release notes for contributors](docs/releasing.md).
 
 Set `TS_CONTENT_MAPPER_DEBUG=1` when running `tsc` to log JSON-RPC traffic. Release a new version after mapper output changes. TypeScript caches results by `name@version` for `--incremental` and `--build`.
 
