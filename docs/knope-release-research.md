@@ -156,9 +156,7 @@ concurrency:
 jobs:
   release:
     if: >-
-      github.event.pull_request.merged == true &&
-      github.event.pull_request.head.ref == 'release' &&
-      github.event.pull_request.head.repo.full_name == github.repository
+      github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'release' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -170,11 +168,11 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v6
         with:
-          node-version: '24'
+          node-version: "24"
           package-manager-cache: false
       - uses: nubjs/setup-nub@v0
         with:
-          nub-version: '0.6.0'
+          nub-version: "0.6.0"
           provision-node: false
           shim: false
           package-manager-cache: false
@@ -207,7 +205,7 @@ Nub's official action supports `nub-version`, `provision-node: false` (retain se
 
 GitHub release creation and npm publishing are **not transactional**. This order can leave a GitHub release/tag without an npm package if npm fails. Check registry state, then retry only the failed npm publish for the same immutable merge commit/version; do not blindly rerun the full job, delete successful tags, or try to republish an existing npm version. Knope documents existing-release conflicts; a future recovery-only manual workflow would need its own deliberate gate. [16]
 
-**Do not split step 5 into an `on: release` or tag-push workflow while creating releases with `GITHUB_TOKEN`.** GitHub generally suppresses workflows caused by that token; `workflow_dispatch`/`repository_dispatch` are exceptions. Current docs also allow token-created PR `opened`/`synchronize`/`reopened` runs in an *approval-required* state, but not other PR activities such as `closed`. Thus use the PAT/App token for automatic release-PR checks, retain a human merge, and publish directly in this merged-PR job. Automated merging with `GITHUB_TOKEN` would require redesign of the trigger chain. [11]
+**Do not split step 5 into an `on: release` or tag-push workflow while creating releases with `GITHUB_TOKEN`.** GitHub generally suppresses workflows caused by that token; `workflow_dispatch`/`repository_dispatch` are exceptions. Current docs also allow token-created PR `opened`/`synchronize`/`reopened` runs in an _approval-required_ state, but not other PR activities such as `closed`. Thus use the PAT/App token for automatic release-PR checks, retain a human merge, and publish directly in this merged-PR job. Automated merging with `GITHUB_TOKEN` would require redesign of the trigger chain. [11]
 
 ## npm trusted publisher and first-publish setup
 

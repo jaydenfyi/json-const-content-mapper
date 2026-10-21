@@ -8,17 +8,21 @@ export type Path = keyof Paths; // "/pets" | "/pets/{id}"
 export type Method<P extends Path> = keyof Paths[P]; // "get" | "post"
 
 type Operation<P extends Path, M extends Method<P>> = Paths[P][M];
-type ParametersOf<T> = T extends { parameters: readonly (infer P)[] } ? P : never;
+type ParametersOf<T> = T extends { parameters: readonly (infer P)[] }
+  ? P
+  : never;
 type NameOf<T> = T extends { name: infer N extends string } ? N : never;
 
-export type ParamName<P extends Path, M extends Method<P>> = NameOf<ParametersOf<Operation<P, M>>>;
+export type ParamName<P extends Path, M extends Method<P>> = NameOf<
+  ParametersOf<Operation<P, M>>
+>;
 // ParamName<"/pets", "get"> = "limit"
 
 // What a generated client's signature can now look like:
 export declare function request<P extends Path, M extends Method<P>>(
   path: P,
   method: M,
-  params: Partial<Record<ParamName<P, M>, string>>,
+  params: Partial<Record<ParamName<P, M>, string>>
 ): Promise<unknown>;
 
 export const ok = request("/pets", "get", { limit: "10" });

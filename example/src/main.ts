@@ -3,8 +3,8 @@ import settings from "./settings.jsonc" with { type: "json" };
 
 // Hover these: the types are literal and deeply readonly.
 type Locale = (typeof locales.appLocales)[number]; // "FR" | "BE"
-export const retries = locales.retries; // 3
-export const theme = settings.theme; // "dark"
+export const { retries } = locales; // 3
+export const { theme } = settings; // "dark"
 
 // Expected errors:
 export const notALocale: Locale = "DE"; // "DE" is not assignable to "BE" | "FR"

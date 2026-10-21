@@ -2,10 +2,15 @@
   "name": "json-const-content-mapper",
   "version": "0.1.0",
   "description": "A TypeScript 7.1+ content mapper that types JSON imports as const",
-  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jaydenfyi/json-const-content-mapper.git"
+  },
   "files": [
     "dist"
   ],
+  "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "prepack": "nub run build",
@@ -14,8 +19,12 @@
     "check": "ultracite check",
     "fix": "ultracite fix"
   },
-  "engines": {
-    "node": ">=22"
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "oxfmt": "^0.71.0",
+    "oxlint": "^1.86.0",
+    "typescript": "7.1.0-dev.20261013.1",
+    "ultracite": "8.0.1"
   },
   "typescript": {
     "contentMapper": {
@@ -25,23 +34,14 @@
       ]
     }
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/jaydenfyi/json-const-content-mapper.git"
-  },
-  "license": "MIT",
-  "devDependencies": {
-    "@types/node": "^26.6.5",
-    "oxfmt": "^0.71.0",
-    "oxlint": "^1.86.0",
-    "typescript": "7.1.0-dev.20261013.1",
-    "ultracite": "8.0.1"
-  },
   "devEngines": {
     "packageManager": {
       "name": "nub",
       "version": "^0.6.0",
       "onFail": "warn"
     }
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

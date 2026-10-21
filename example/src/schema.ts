@@ -1,4 +1,5 @@
 import type { FromSchema } from "json-schema-to-ts";
+
 import userSchema from "./user.schema.const.json" with { type: "json" };
 
 // No `as const` needed: the mapper already types the import as a deeply readonly literal,

@@ -13,7 +13,7 @@ New public names use the proposed `@ts-content-mappers/*` scope. Check ownership
 ## Package catalogue
 
 | Package | Recommended extensions | TypeScript view | Release status |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `json-const` | `.const.json`, `.jsonc` | Literal values and readonly objects/tuples | Existing. Preserve compatibility |
 | `yaml` | `.const.yaml`, `.const.yml` | Literal values and readonly objects/tuples | Next release |
 | `frontmatter` | `.content.md` | Literal metadata and a `string` body | Next after YAML |
@@ -244,7 +244,7 @@ Keep nesting, alias expansion, parser input limits, and reference traversal boun
 ## Implementation order
 
 | Stage | Deliverable | Genuine prerequisite |
-|---|---|---|
+| --- | --- | --- |
 | 1 | Private workspace root and unchanged, independently packed JSON package | None |
 | 2 | YAML mapper and only the shared infrastructure it needs | Stage 1 |
 | 3 | Frontmatter mapper and runtime-shape example | Stage 2's YAML helper |

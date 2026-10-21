@@ -7,6 +7,9 @@
   },
   "include": ["src"],
   "contentMappers": [
-    { "package": "json-const-content-mapper", "extensions": [".const.json", ".jsonc"] }
+    {
+      "package": "json-const-content-mapper",
+      "extensions": [".const.json", ".jsonc"]
+    }
   ]
 }

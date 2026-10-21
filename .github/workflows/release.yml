@@ -15,11 +15,7 @@ concurrency:
 jobs:
   release:
     if: >-
-      vars.RELEASES_ENABLED == 'true' &&
-      github.event.repository.private == false &&
-      github.event.pull_request.merged == true &&
-      github.event.pull_request.head.ref == 'release' &&
-      github.event.pull_request.head.repo.full_name == github.repository
+      vars.RELEASES_ENABLED == 'true' && github.event.repository.private == false && github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'release' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -32,11 +28,11 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
-          node-version: '24'
+          node-version: "24"
           package-manager-cache: false
       - uses: nubjs/setup-nub@c7b970ec04655a2f0a111cd436cc182a3b660e7a # v0
         with:
-          nub-version: '0.6.0'
+          nub-version: "0.6.0"
           provision-node: false
           shim: false
           package-manager-cache: false

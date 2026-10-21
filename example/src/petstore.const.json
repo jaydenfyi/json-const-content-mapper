@@ -5,14 +5,23 @@
     "/pets": {
       "get": {
         "operationId": "listPets",
-        "parameters": [{ "name": "limit", "in": "query", "schema": { "type": "integer" } }]
+        "parameters": [
+          { "name": "limit", "in": "query", "schema": { "type": "integer" } }
+        ]
       },
       "post": { "operationId": "createPet", "parameters": [] }
     },
     "/pets/{id}": {
       "get": {
         "operationId": "getPet",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }]
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ]
       }
     }
   }
