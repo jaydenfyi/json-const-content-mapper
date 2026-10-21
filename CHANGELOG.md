@@ -1,3 +1,5 @@
 # Changelog
 
-Knope adds release notes here when preparing a release.
+## 0.1.0
+
+- Type opted-in JSON and JSONC imports as deeply readonly literal values with a TypeScript content mapper.
