@@ -2,17 +2,21 @@
 
 Import JSON with **literal types and readonly properties**, as if you wrote `as const`. Requires [TypeScript 7.1+ content mappers](https://devblogs.microsoft.com/typescript/announcing-typescript-7-1-beta/#content-mappers). No code generation or compiler patch needed.
 
+Use your JSON data to define the allowed values:
+
 ```jsonc
-// src/locales.const.json
-{ "appLocales": ["FR", "BE"], "retries": 3 }
+// src/pricing.const.json
+{ "plans": ["free", "pro", "team"] }
 ```
 
 ```ts
-import config from "./locales.const.json" with { type: "json" };
+import pricing from "./pricing.const.json" with { type: "json" };
 
-config.appLocales; // readonly ["FR", "BE"]
-config.retries; // 3
-type Locale = (typeof config.appLocales)[number]; // "FR" | "BE"
+// Without mapper:
+// { plans: string[] }
+
+// With mapper:
+// { readonly plans: readonly ["free", "pro", "team"] }
 ```
 
 ## Setup
