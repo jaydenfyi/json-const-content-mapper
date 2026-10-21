@@ -48,7 +48,9 @@ export function transform(fileName: string, content: string): TransformResult {
   let cursor = 0;
   for (const [start, end] of result.comments) {
     appendJson(cursor, start);
-    body += json.slice(start, end).replaceAll(/[^\r\n]/gu, " ");
+    // Replace UTF-16 units, not code points, to preserve source mapping offsets.
+    // oxlint-disable-next-line require-unicode-regexp
+    body += json.slice(start, end).replaceAll(/[^\r\n]/g, " ");
     cursor = end;
   }
   appendJson(cursor, json.length);

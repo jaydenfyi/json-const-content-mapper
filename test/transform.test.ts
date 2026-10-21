@@ -85,6 +85,18 @@ test("JSONC: blanks comments, keeps line breaks, and maps only the JSON between 
   assert.equal(mappedText("a.jsonc", content), '\r\n{ "a": [1,],  "d": 2 } ');
 });
 
+test("JSONC: preserves UTF-16 offsets after emoji in comments", () => {
+  for (const content of [
+    '/* 😀 */ { "value": 1 }',
+    '// 😀\r\n{ "value": 1 }',
+  ]) {
+    const { text } = transform("a.jsonc", content);
+    const body = text.slice(prefix.length, text.length - suffix.length);
+    assert.equal(body.length, content.length);
+    assert.equal(mappedText("a.jsonc", content).trim(), '{ "value": 1 }');
+  }
+});
+
 test("only files ending in .jsonc (any case) are parsed as JSONC", () => {
   const content = "// c\n[1,]";
   assert.equal(transform("/p/settings.jsonc", content).diagnostics, undefined);
