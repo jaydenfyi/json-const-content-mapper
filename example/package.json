@@ -1,0 +1,20 @@
+{
+  "name": "json-const-content-mapper-example",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --runExternalCode"
+  },
+  "devDependencies": {
+    "json-const-content-mapper": "file:..",
+    "json-schema-to-ts": "^3.1.1",
+    "typescript": "7.1.0-dev.20261013.1"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "nub",
+      "version": "^0.6.0",
+      "onFail": "warn"
+    }
+  }
+}

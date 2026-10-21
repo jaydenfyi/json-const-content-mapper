@@ -1,0 +1,5 @@
+{
+  "appLocales": ["FR", "BE"],
+  "retries": 3,
+  "features": { "darkMode": true, "beta": null }
+}

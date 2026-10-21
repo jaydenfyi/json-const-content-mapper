@@ -1,0 +1,5 @@
+{
+  "greeting": "Hi {name}!",
+  "cart": "{count} items in {place}",
+  "plain": "No placeholders here"
+}

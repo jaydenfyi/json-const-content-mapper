@@ -1,0 +1,55 @@
+name: Release
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: npm-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: >-
+      vars.RELEASES_ENABLED == 'true' &&
+      github.event.repository.private == false &&
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.head.ref == 'release' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - uses: nubjs/setup-nub@c7b970ec04655a2f0a111cd436cc182a3b660e7a # v0
+        with:
+          nub-version: '0.6.0'
+          provision-node: false
+          shim: false
+          package-manager-cache: false
+      - run: npm install --global npm@11
+      - run: node --version && npm --version && nub --version
+      - run: nub install --frozen-lockfile
+      - run: nub run test
+      - run: nub run typecheck
+      - run: npm pack --dry-run
+      - uses: knope-dev/action@19617851f9f13ab2f27a05989c55efb18aca3675 # v2.1.2
+        with:
+          version: 0.23.1
+      - run: knope release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - run: npm publish --access public

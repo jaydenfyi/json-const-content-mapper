@@ -1,0 +1,6 @@
+{
+  // Run this workspace's TypeScript 7.1 build, which supports content mappers.
+  // VS Code asks once whether to allow the workspace version.
+  "js/ts.tsdk.path": "node_modules/typescript",
+  "js/ts.contentMappers.enabled": true
+}

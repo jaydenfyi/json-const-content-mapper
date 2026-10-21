@@ -1,0 +1,1 @@
+{ "extends": "../tsconfig.json", "compilerOptions": { "composite": true, "noEmit": false, "emitDeclarationOnly": true, "outDir": "../../../../.e2e-out/clean" }, "include": [".", "*.const.json"] }

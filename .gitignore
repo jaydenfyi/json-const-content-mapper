@@ -1,0 +1,9 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.e2e-out/
+.DS_Store
+.local/
+.pi/
+.env
+.env.*

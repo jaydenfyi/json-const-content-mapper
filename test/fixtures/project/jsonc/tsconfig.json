@@ -1,0 +1,5 @@
+{
+  "compilerOptions": { "module": "nodenext", "strict": true, "resolveJsonModule": true, "noEmit": true },
+  "include": ["."],
+  "contentMappers": [{ "package": "json-const-content-mapper", "extensions": [".const.json", ".jsonc"] }]
+}

@@ -1,0 +1,8 @@
+// Editor-style settings file
+{
+  /* the theme */
+  "theme": "dark",
+  "rulers": [80, 120,],
+  // @ts-expect-error
+  "a": 1, "a": 2,
+} // end

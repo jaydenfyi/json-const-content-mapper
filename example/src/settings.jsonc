@@ -1,0 +1,8 @@
+// JSONC: comments and trailing commas are allowed.
+{
+  /* the editor theme */
+  "theme": "dark",
+  "rulers": [80, 120,],
+  // @ts-expect-error  <- has no effect: comments are ignored, so the duplicate key below is still reported
+  "tabSize": 2, "tabSize": 4,
+}

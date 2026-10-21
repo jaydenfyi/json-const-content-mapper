@@ -1,0 +1,4 @@
+{
+  "appLocales": ["FR", "BE"],
+  "nested": { "n": 1, "neg": -2.5, "flag": true, "nil": null }
+}
