@@ -9,9 +9,21 @@ import { createMessageReader, encodeMessage } from "../src/rpc.ts";
 // Drives the built server (dist/), which is what TypeScript runs. `nub run test` builds first.
 const serverPath = fileURLToPath(new URL("../dist/server.js", import.meta.url));
 
+// A reply carries exactly one of result/error; a test reads the one it expects, and names
+// the result shape it asserts on.
+interface RpcReply<TResult = unknown> {
+  error: { code: number; message: string };
+  id: number;
+  jsonrpc: "2.0";
+  result: TResult;
+}
+
 function startServer(
   t: test.TestContext
-): (method: string, params?: unknown) => Promise<any> {
+): <TResult = unknown>(
+  method: string,
+  params?: unknown
+) => Promise<RpcReply<TResult>> {
   const child = spawn(process.execPath, [serverPath], {
     stdio: ["pipe", "pipe", "inherit"],
   });
@@ -31,9 +43,18 @@ function startServer(
     })
   );
   let nextId = 1;
-  return (method, params) => {
-    const id = nextId++;
-    const response = new Promise((resolve) => pending.set(id, resolve));
+  return <TResult>(
+    method: string,
+    params?: unknown
+  ): Promise<RpcReply<TResult>> => {
+    const id = nextId;
+    nextId += 1;
+    // There is no other way to await a pending JSON-RPC reply.
+    // oxlint-disable-next-line promise/avoid-new
+    const response = new Promise<RpcReply<TResult>>((resolve) => {
+      // The wire reply is whatever the server sends; the caller names the shape it expects.
+      pending.set(id, resolve as (message: unknown) => void);
+    });
     child.stdin.write(
       encodeMessage({
         id,
@@ -66,7 +87,8 @@ test("serves the full lifecycle", async (t) => {
       result: { diagnosticSource: "json-const", positionEncoding: "utf-16" },
     }
   );
-  assert.deepEqual((await request("openProject", project("p1"))).result, {});
+  const opened = await request("openProject", project("p1"));
+  assert.deepEqual(opened.result, {});
 
   const transformed = await request("transform", {
     content: "[1]\n",
@@ -79,10 +101,8 @@ test("serves the full lifecycle", async (t) => {
     text: "export default ([1]\n) as const;\n",
   });
 
-  assert.equal(
-    (await request("closeProject", { projectHandle: "p1" })).result,
-    null
-  );
+  const closed = await request("closeProject", { projectHandle: "p1" });
+  assert.equal(closed.result, null);
 });
 
 test("treats .jsonc files as JSONC", async (t) => {
@@ -90,13 +110,13 @@ test("treats .jsonc files as JSONC", async (t) => {
   await request("initialize", { positionEncodings: ["utf-16"] });
   await request("openProject", project("p"));
   const content = "[1, // one\n]";
-  const jsonc = await request("transform", {
+  const jsonc = await request<{ diagnostics?: unknown }>("transform", {
     content,
     fileName: "/p/a.jsonc",
     projectHandle: "p",
   });
   assert.equal(jsonc.result.diagnostics, undefined);
-  const json = await request("transform", {
+  const json = await request<{ diagnostics: { code: number }[] }>("transform", {
     content,
     fileName: "/p/a.const.json",
     projectHandle: "p",
@@ -106,7 +126,7 @@ test("treats .jsonc files as JSONC", async (t) => {
 
 test("echoes protocolVersion when the host sends one", async (t) => {
   const request = startServer(t);
-  const response = await request("initialize", {
+  const response = await request<{ protocolVersion?: number }>("initialize", {
     positionEncodings: ["utf-16"],
     protocolVersion: 1,
   });
@@ -124,7 +144,7 @@ test("rejects a host that does not offer utf-16", async (t) => {
 test("reports options as unsupported", async (t) => {
   const request = startServer(t);
   await request("initialize", { positionEncodings: ["utf-16"] });
-  const response = await request(
+  const response = await request<{ optionDiagnostics: unknown[] }>(
     "openProject",
     project("p", { options: { namedExports: true } })
   );
@@ -140,14 +160,15 @@ test("reports options as unsupported", async (t) => {
 test("returns JSON-RPC errors for bad requests", async (t) => {
   const request = startServer(t);
   await request("initialize", { positionEncodings: ["utf-16"] });
-  assert.equal((await request("bogus")).error.code, -32_601);
-  assert.equal((await request("initialize")).error.code, -32_602);
-  assert.equal(
-    (await request("transform", { fileName: 1 })).error.code,
-    -32_602
-  );
-  assert.equal(
-    (await request("openProject", { projectHandle: "x" })).error.code,
-    -32_602
-  );
+  const unknownMethod = await request("bogus");
+  assert.equal(unknownMethod.error.code, -32_601);
+
+  const missingParams = await request("initialize");
+  assert.equal(missingParams.error.code, -32_602);
+
+  const badParams = await request("transform", { fileName: 1 });
+  assert.equal(badParams.error.code, -32_602);
+
+  const badHandle = await request("openProject", { projectHandle: "x" });
+  assert.equal(badHandle.error.code, -32_602);
 });

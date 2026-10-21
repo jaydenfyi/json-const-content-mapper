@@ -8,6 +8,7 @@ import { JsonErrorCode } from "../src/validate.ts";
 function mappedText(fileName: string, content: string): string {
   const result = transform(fileName, content);
   assert.equal(result.diagnostics, undefined);
+  assert.ok(result.mappings);
   let covered = "";
   for (const [
     virtualStart,
@@ -15,7 +16,7 @@ function mappedText(fileName: string, content: string): string {
     originalStart,
     originalLength,
     kind,
-  ] of result.mappings!) {
+  ] of result.mappings) {
     assert.equal(kind, 0);
     assert.equal(virtualLength, originalLength);
     const original = content.slice(
@@ -76,10 +77,10 @@ test("JSONC: blanks comments, keeps line breaks, and maps only the JSON between 
 
   assert.ok(text.startsWith(prefix) && text.endsWith(suffix));
   assert.equal(body.length, content.length);
-  assert.doesNotMatch(body, /@ts-expect-error|\/\*|\*\/|\/\/|end/);
+  assert.doesNotMatch(body, /@ts-expect-error|\/\*|\*\/|\/\/|end/u);
   assert.deepEqual(
-    [...body.matchAll(/[\r\n]/g)].map((m) => m.index),
-    [...content.matchAll(/[\r\n]/g)].map((m) => m.index)
+    [...body.matchAll(/[\r\n]/gu)].map((m) => m.index),
+    [...content.matchAll(/[\r\n]/gu)].map((m) => m.index)
   );
   assert.equal(mappedText("a.jsonc", content), '\r\n{ "a": [1,],  "d": 2 } ');
 });

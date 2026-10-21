@@ -5,24 +5,37 @@ import spec from "./petstore.const.json" with { type: "json" };
 type Paths = typeof spec.paths;
 
 export type Path = keyof Paths; // "/pets" | "/pets/{id}"
-export type Method<P extends Path> = keyof Paths[P]; // "get" | "post"
+export type Method<TPath extends Path> = keyof Paths[TPath]; // "get" | "post"
 
-type Operation<P extends Path, M extends Method<P>> = Paths[P][M];
-type ParametersOf<T> = T extends { parameters: readonly (infer P)[] }
-  ? P
+type Operation<
+  TPath extends Path,
+  TMethod extends Method<TPath>,
+> = Paths[TPath][TMethod];
+type ParametersOf<TOperation> = TOperation extends {
+  parameters: readonly (infer TParameter)[];
+}
+  ? TParameter
   : never;
-type NameOf<T> = T extends { name: infer N extends string } ? N : never;
+type NameOf<TParameter> = TParameter extends {
+  name: infer TName extends string;
+}
+  ? TName
+  : never;
 
-export type ParamName<P extends Path, M extends Method<P>> = NameOf<
-  ParametersOf<Operation<P, M>>
->;
+export type ParamName<
+  TPath extends Path,
+  TMethod extends Method<TPath>,
+> = NameOf<ParametersOf<Operation<TPath, TMethod>>>;
 // ParamName<"/pets", "get"> = "limit"
 
 // What a generated client's signature can now look like:
-export declare function request<P extends Path, M extends Method<P>>(
-  path: P,
-  method: M,
-  params: Partial<Record<ParamName<P, M>, string>>
+export declare function request<
+  TPath extends Path,
+  TMethod extends Method<TPath>,
+>(
+  path: TPath,
+  method: TMethod,
+  params: Partial<Record<ParamName<TPath, TMethod>, string>>
 ): Promise<unknown>;
 
 export const ok = request("/pets", "get", { limit: "10" });

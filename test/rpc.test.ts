@@ -34,13 +34,13 @@ test("reads several frames from one chunk", () => {
 
 test("Content-Length counts bytes, not characters", () => {
   const frame = encodeMessage("😀").toString("utf-8");
-  assert.match(frame, /^Content-Length: 6\r\n\r\n"😀"$/);
+  assert.match(frame, /^Content-Length: 6\r\n\r\n"😀"$/u);
 });
 
 test("rejects a frame without Content-Length", () => {
   const { read } = collect();
   assert.throws(
     () => read(Buffer.from("X-Other: 1\r\n\r\n{}")),
-    /Missing Content-Length/
+    /Missing Content-Length/u
   );
 });

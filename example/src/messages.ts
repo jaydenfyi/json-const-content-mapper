@@ -3,17 +3,19 @@ import messages from "./messages.const.json" with { type: "json" };
 export type MessageKey = keyof typeof messages; // "greeting" | "cart" | "plain"
 
 // Pull the {placeholders} out of the literal message text.
-type Placeholders<S extends string> =
-  S extends `${string}{${infer Name}}${infer Rest}`
-    ? Name | Placeholders<Rest>
+type Placeholders<TText extends string> =
+  TText extends `${string}{${infer TName}}${infer TRest}`
+    ? TName | Placeholders<TRest>
     : never;
 
-export type Args<K extends MessageKey> = Placeholders<(typeof messages)[K]>;
+export type Args<TKey extends MessageKey> = Placeholders<
+  (typeof messages)[TKey]
+>;
 // Args<"cart"> = "count" | "place", Args<"plain"> = never
 
-export declare function t<K extends MessageKey>(
-  key: K,
-  args: Record<Args<K>, string>
+export declare function t<TKey extends MessageKey>(
+  key: TKey,
+  args: Record<Args<TKey>, string>
 ): string;
 
 export const a = t("cart", { count: "2", place: "Paris" });

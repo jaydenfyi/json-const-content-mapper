@@ -3,8 +3,13 @@
 // them here. In JSONC mode (https://jsonc.org), `//` and `/* */` comments and trailing commas are allowed.
 // Offsets are UTF-16 indices into the validated text.
 
+// pos++ is the idiom in the character scanner; a comment per site would bury the parser.
+/* oxlint-disable no-plusplus */
+
 import type { MapperDiagnostic } from "./protocol.ts";
 
+// The const and its same-named type are declaration merging, not a redeclaration.
+// oxlint-disable-next-line no-redeclare
 export const JsonErrorCode = {
   Comment: 1004,
   ControlCharacter: 1007,
@@ -28,10 +33,19 @@ class JsonError {
   }
 }
 
+function fail(
+  code: JsonErrorCode,
+  start: number,
+  length: number,
+  messageText: string
+): never {
+  throw new JsonError({ code, length, messageText, start });
+}
+
 const identifierStart = /[\p{ID_Start}$_]/u;
 const identifierPart = /[\p{ID_Continue}$_\u200C\u200D]/u;
-const numberPart = /[0-9A-Za-z_.+-]/;
-const hexDigit = /[0-9A-Fa-f]/;
+const numberPart = /[0-9A-Za-z_.+-]/u;
+const hexDigit = /[0-9A-Fa-f]/u;
 const simpleEscapes = '"\\/bfnrt';
 
 /** The [start, end) range of a JSONC comment. */
@@ -49,19 +63,10 @@ export function validateJson(
   let pos = 0;
   const comments: CommentRange[] = [];
 
-  function fail(
-    code: JsonErrorCode,
-    start: number,
-    length: number,
-    messageText: string
-  ): never {
-    throw new JsonError({ code, length, messageText, start });
-  }
-
   function skipComment(): void {
     const start = pos;
     if (text[pos + 1] === "/") {
-      const lineEnd = text.slice(pos).search(/[\n\r]/);
+      const lineEnd = text.slice(pos).search(/[\n\r]/u);
       pos = lineEnd === -1 ? text.length : pos + lineEnd;
     } else {
       const end = text.indexOf("*/", pos + 2);
@@ -114,23 +119,28 @@ export function validateJson(
   }
 
   function codePointAt(index: number): string {
+    // Callers bound index to text.length before calling.
+    // oxlint-disable-next-line no-non-null-assertion
     return String.fromCodePoint(text.codePointAt(index)!);
   }
 
   /** Returns the end of the run of characters matching pattern that starts at index. */
   function runEnd(index: number, pattern: RegExp): number {
-    while (index < text.length) {
-      const ch = codePointAt(index);
+    let i = index;
+    while (i < text.length) {
+      const ch = codePointAt(i);
       if (!pattern.test(ch)) {
         break;
       }
-      index += ch.length;
+      i += ch.length;
     }
-    return index;
+    return i;
   }
 
   function failUnexpectedCharacter(messageSuffix = ""): never {
     const ch = codePointAt(pos);
+    // ch comes from codePointAt(), so it is never empty.
+    // oxlint-disable-next-line no-non-null-assertion
     const code = ch.codePointAt(0)!;
     const shown =
       code >= 0x21 && code <= 0x7e
@@ -155,7 +165,8 @@ export function validateJson(
   }
 
   function parseString(): void {
-    const start = pos++; // "
+    // Consume the opening quote.
+    const start = pos++;
     while (true) {
       if (pos >= text.length) {
         fail(
@@ -165,7 +176,7 @@ export function validateJson(
           "Unterminated string."
         );
       }
-      const ch = text[pos]!;
+      const ch = text[pos];
       if (ch === '"') {
         pos++;
         return;
@@ -224,7 +235,7 @@ export function validateJson(
     }
     function digits(): number {
       const digitsStart = pos;
-      while (text[pos]! >= "0" && text[pos]! <= "9") {
+      while (text[pos] >= "0" && text[pos] <= "9") {
         pos++;
       }
       return pos - digitsStart;
@@ -253,7 +264,7 @@ export function validateJson(
         invalid();
       }
     }
-    if (pos < text.length && numberPart.test(text[pos]!)) {
+    if (pos < text.length && numberPart.test(text[pos])) {
       invalid();
     }
   }
@@ -274,7 +285,8 @@ export function validateJson(
 
   /** Parses `item (, item)*` up to `close`, starting at the opening bracket. */
   function parseList(close: "}" | "]", parseItem: () => void): void {
-    pos++; // { or [
+    // Consume the opening brace or bracket.
+    pos++;
     skipWhitespace();
     if (text[pos] === close) {
       pos++;
@@ -325,14 +337,14 @@ export function validateJson(
     }
     pos++;
     // Mutual recursion with parseValue: either order leaves one forward reference.
-    // eslint-disable-next-line no-use-before-define
+    // oxlint-disable-next-line no-use-before-define
     parseValue();
   }
 
   function parseValue(): void {
     skipWhitespace();
     expectMore();
-    const ch = text[pos]!;
+    const ch = text[pos];
     if (ch === "{") {
       parseList("}", parseMember);
     } else if (ch === "[") {

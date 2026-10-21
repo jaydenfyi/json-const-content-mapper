@@ -11,18 +11,18 @@ import {
   rmSync,
   symlinkSync,
 } from "node:fs";
-import { join } from "node:path";
+import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
-const fixture = join(root, "test/fixtures/project");
-const tsc = join(root, "node_modules/.bin/tsc");
-const outDir = join(root, ".e2e-out");
+const fixture = path.join(root, "test/fixtures/project");
+const tsc = path.join(root, "node_modules/.bin/tsc");
+const outDir = path.join(root, ".e2e-out");
 
-const link = join(fixture, "node_modules/json-const-content-mapper");
+const link = path.join(fixture, "node_modules/json-const-content-mapper");
 if (!existsSync(link)) {
-  mkdirSync(join(fixture, "node_modules"), { recursive: true });
+  mkdirSync(path.join(fixture, "node_modules"), { recursive: true });
   symlinkSync(root, link, "dir");
 }
 
@@ -89,25 +89,25 @@ test("emits declarations and skips the mapper when a build is up to date", () =>
   assert.equal(first.status, 0);
 
   const declaration = readFileSync(
-    join(outDir, "clean/locales.d.const.json.ts"),
+    path.join(outDir, "clean/locales.d.const.json.ts"),
     "utf-8"
   );
-  assert.match(declaration, /readonly appLocales: readonly \["FR", "BE"\];/);
-  assert.match(declaration, /readonly neg: -2\.5;/);
+  assert.match(declaration, /readonly appLocales: readonly \["FR", "BE"\];/u);
+  assert.match(declaration, /readonly neg: -2\.5;/u);
 
   const second = run(["-b", "clean", "--runExternalCode", "--verbose"], {
     TS_CONTENT_MAPPER_DEBUG: "1",
   });
   const output = second.lines.join("\n") + second.stderr;
-  assert.match(output, /is up to date/);
+  assert.match(output, /is up to date/u);
   assert.doesNotMatch(
     output,
-    /content mapper: json-const-content-mapper\] send:/
+    /content mapper: json-const-content-mapper\] send:/u
   );
 });
 
 test("runs emitted JavaScript after copying the mapped JSON asset", () => {
-  const out = join(outDir, "runtime");
+  const out = path.join(outDir, "runtime");
   rmSync(out, { force: true, recursive: true });
   const compiled = run([
     "-p",
@@ -122,8 +122,8 @@ test("runs emitted JavaScript after copying the mapped JSON asset", () => {
   assert.equal(compiled.status, 0, compiled.stderr);
 
   copyFileSync(
-    join(fixture, "clean/locales.const.json"),
-    join(out, "locales.const.json")
+    path.join(fixture, "clean/locales.const.json"),
+    path.join(out, "locales.const.json")
   );
   const result = spawnSync(
     process.execPath,
@@ -148,7 +148,7 @@ test("narrows .jsonc imports, and comments never act as TypeScript directives", 
 });
 
 test("emits .jsonc declarations where TypeScript looks for them (x.d.jsonc.ts)", () => {
-  const out = join(outDir, "jsonc");
+  const out = path.join(outDir, "jsonc");
   run([
     "-p",
     "jsonc",
@@ -161,7 +161,7 @@ test("emits .jsonc declarations where TypeScript looks for them (x.d.jsonc.ts)",
     out,
   ]);
   assert.match(
-    readFileSync(join(out, "settings.d.jsonc.ts"), "utf-8"),
-    /readonly rulers: readonly \[80, 120\];/
+    readFileSync(path.join(out, "settings.d.jsonc.ts"), "utf-8"),
+    /readonly rulers: readonly \[80, 120\];/u
   );
 });

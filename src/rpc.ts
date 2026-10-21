@@ -15,12 +15,12 @@ export function createMessageReader(
         return;
       }
       const header = buffer.subarray(0, headerEnd).toString("ascii");
-      const match = /^Content-Length:\s*(\d+)\s*$/im.exec(header);
-      if (!match) {
+      const match = /^Content-Length:\s*(?<length>\d+)\s*$/imu.exec(header);
+      if (!match?.groups) {
         throw new Error("Missing Content-Length header");
       }
       const messageStart = headerEnd + headerSeparator.length;
-      const messageEnd = messageStart + Number(match[1]);
+      const messageEnd = messageStart + Number(match.groups.length);
       if (buffer.length < messageEnd) {
         return;
       }

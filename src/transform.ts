@@ -16,7 +16,7 @@ export const fallbackText = "export default undefined as any;\n";
  * Files ending in `.jsonc` are parsed as JSONC; everything else is strict JSON.
  */
 export function transform(fileName: string, content: string): TransformResult {
-  const bomLength = content.charCodeAt(0) === 0xfe_ff ? 1 : 0;
+  const bomLength = content.codePointAt(0) === 0xfe_ff ? 1 : 0;
   const json = content.slice(bomLength);
   const result = validateJson(json, {
     jsonc: fileName.toLowerCase().endsWith(".jsonc"),
@@ -48,7 +48,7 @@ export function transform(fileName: string, content: string): TransformResult {
   let cursor = 0;
   for (const [start, end] of result.comments) {
     appendJson(cursor, start);
-    body += json.slice(start, end).replaceAll(/[^\r\n]/g, " ");
+    body += json.slice(start, end).replaceAll(/[^\r\n]/gu, " ");
     cursor = end;
   }
   appendJson(cursor, json.length);

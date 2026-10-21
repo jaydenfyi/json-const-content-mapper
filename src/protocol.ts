@@ -55,6 +55,8 @@ export type SpanMapping = [
   kind: SpanMapKind,
 ];
 
+// The const and its same-named type are declaration merging, not a redeclaration.
+// oxlint-disable-next-line no-redeclare
 export const SpanMapKind = {
   Alias: 2,
   Atom: 1,

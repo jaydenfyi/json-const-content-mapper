@@ -33,6 +33,7 @@ class RpcError extends Error {
   readonly code: number;
   constructor(code: number, message: string) {
     super(message);
+    this.name = "RpcError";
     this.code = code;
   }
 }
@@ -73,11 +74,11 @@ function isRequest(value: unknown): value is JsonRpcRequest {
   );
 }
 
-function expectParams<T>(
+function expectParams<TParams>(
   params: unknown,
-  isValid: (value: unknown) => value is T,
+  isValid: (value: unknown) => value is TParams,
   message: string
-): T {
+): TParams {
   if (!isValid(params)) {
     throw new RpcError(InvalidParams, message);
   }
