@@ -24,7 +24,7 @@ import pricing from "./pricing.const.json" with { type: "json" };
 Install the mapper:
 
 ```sh
-nub add --save-dev json-const-content-mapper
+npm install -D json-const-content-mapper
 ```
 
 Register the file extension in `tsconfig.json`:
