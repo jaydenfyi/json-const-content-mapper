@@ -1,5 +1,8 @@
 # json-const-content-mapper
 
+> [!WARNING]
+> The TypeScript team tightened extension validation after our pinned nightly, breaking the `.const.json` compound-extension workaround in `7.1.0-beta` ([upstream issue](https://github.com/microsoft/TypeScript/issues/64917)). I'd recommend using [motherload](https://github.com/colinhacks/motherload) with `.json5` files as the next-best workaround.
+
 Import JSON with **literal types and readonly properties**, as if you wrote `as const`. Requires [TypeScript 7.1+ content mappers](https://devblogs.microsoft.com/typescript/announcing-typescript-7-1-beta/#content-mappers). No code generation or compiler patch needed.
 
 Use your JSON data to define the allowed values:
@@ -153,3 +156,7 @@ Set `TS_CONTENT_MAPPER_DEBUG=1` when running `tsc` to log JSON-RPC traffic. Rele
 - [Translations](example/src/messages.ts): require arguments from placeholders in message text.
 
 The examples include deliberate type errors to show which mistakes TypeScript catches.
+
+## Related projects
+
+- [motherload](https://github.com/colinhacks/motherload)
